@@ -94,6 +94,6 @@ end
         periodic = Oceananigans.Grids.topology(ctg.grid, 1) === Periodic ? PythonCall.pybuiltins.True : pybuiltins.False
         method = "conservative"
         regridder = xesmf.Regridder(src_coordinates, dst_coordinates, method; periodic)
-        weights = XESMF.sparse_regridding_weights(regridder)
+        weights = XESMF.sparse_regridder_weights(regridder)
     end
 end
