@@ -2,8 +2,17 @@
 
 Julia wrapper for [xESMF](https://github.com/pangeo-data/xESMF), a python package maintained by [pangeo](https://pangeo.io/).
 
-[![CI](https://github.com/NumericalEarth/XESMF.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/NumericalEarth/XESMF.jl/actions)
-[![Documentation](https://github.com/numericalearth/XESMF.jl/actions/workflows/documentation.yml/badge.svg)](https://NumericalEarth.github.io/XESMF.jl/)
+<a href="https://numericalearth.github.io/XESMF.jl/stable">
+  <img alt="Stable documentation" src="https://img.shields.io/badge/documentation-stable%20release-blue">
+</a>
+
+<a href="https://numericalearth.github.io/XESMF.jl/dev">
+  <img alt="Development documentation" src="https://img.shields.io/badge/documentation-in%20development-orange">
+</a>
+
+<a href="https://github.com/NumericalEarth/XESMF.jl/actions">
+  <img alt="CI" src="https://github.com/NumericalEarth/XESMF.jl/actions/workflows/CI.yml/badge.svg">
+</a>
 
 ## Overview
 
