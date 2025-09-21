@@ -67,13 +67,13 @@ end
         # Create smaller test grids to avoid memory issues
         tg = TripolarGrid(size=(360, 170, 1), z=(0, 1))
         ll = LatitudeLongitudeGrid(size=(360, 180, 1), longitude=(0, 360), latitude=(-90, 90), z=(0, 1))
-        
+
         ctg = CenterField(tg)
         cll = CenterField(ll)
 
         # Test that we can create the coordinate structures
         src_coordinates, dst_coordinates = regridding_weights(ctg, cll)
-        
+
         # Verify coordinate structures are valid
         @test haskey(src_coordinates, "lat")
         @test haskey(src_coordinates, "lon")
@@ -84,16 +84,17 @@ end
         @test haskey(dst_coordinates, "lon")
         @test haskey(dst_coordinates, "lat_b")
         @test haskey(dst_coordinates, "lon_b")
-        
+
         # Test basic grid properties
         @test size(tg) == (360, 170, 1)
         @test size(ll) == (360, 180, 1)
 
-        # xesmf = XESMF.xesmf
-        # periodic = Oceananigans.Grids.topology(ctg.grid, 1) === Periodic
-        # method = "conservative"
-        # regridder = xesmf.Regridder(src_coordinates, dst_coordinates, method; periodic)
-        # weights = XESMF.sparse_regridding_weights(regridder)
+        xesmf = XESMF.xesmf
+        periodic = Oceananigans.Grids.topology(ctg.grid, 1) === Periodic ? PythonCall.pybuiltins.True : pybuiltins.False
+        method = "conservative"
+        regridder = xesmf.Regridder(src_coordinates, dst_coordinates, method; periodic)
+        weights = XESMF.sparse_regridder_weights(regridder)
+
+        @test weights isa SparseMatrixCSC
     end
 end
-    
