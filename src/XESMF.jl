@@ -5,7 +5,7 @@ using PythonCall
 using SparseArrays
 
 # Placeholder (will be overwritten in __init__)
-const xesmf = Py(nothing)
+xesmf = Py(nothing)
 
 function __init__()
     global xesmf
