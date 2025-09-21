@@ -89,11 +89,12 @@ end
         @test size(tg) == (360, 170, 1)
         @test size(ll) == (360, 180, 1)
 
-        @show xesmf = XESMF.xesmf # not working, returns Python: NULL
-        @show xesmf = XESMF.pyimport("xesmf")
+        xesmf = XESMF.xesmf
         periodic = Oceananigans.Grids.topology(ctg.grid, 1) === Periodic ? PythonCall.pybuiltins.True : pybuiltins.False
         method = "conservative"
         regridder = xesmf.Regridder(src_coordinates, dst_coordinates, method; periodic)
         weights = XESMF.sparse_regridder_weights(regridder)
+
+        @test weights isa SparseMatrixCSC
     end
 end
