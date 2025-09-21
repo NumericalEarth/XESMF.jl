@@ -10,7 +10,7 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 CondaPkg = "0.2.31"
-Oceananigans = "0.98"
+Oceananigans = "0.98, 0.99"
 PythonCall = "0.9.27"
 SparseArrays = "1"
 Test = "1"
