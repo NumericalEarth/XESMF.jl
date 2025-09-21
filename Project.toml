@@ -1,7 +1,7 @@
 name = "XESMF"
 uuid = "2e0b0046-e7a1-486f-88de-807ee8ffabe5"
-authors = ["Gregory Wagner <wagner.greg@gmail.com>"]
-version = "0.1.0"
+authors = ["NumericalEarth and contributors"]
+version = "0.1.1"
 
 [deps]
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
@@ -10,7 +10,7 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 CondaPkg = "0.2.31"
-Oceananigans = "0.98"
+Oceananigans = "0.98, 0.99"
 PythonCall = "0.9.27"
 SparseArrays = "1"
 Test = "1"

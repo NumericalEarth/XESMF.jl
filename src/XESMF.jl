@@ -4,25 +4,28 @@ using CondaPkg
 using PythonCall
 using SparseArrays
 
-# Try to import xesmf with better error handling
-xesmf = try
-    pyimport("xesmf")
-catch e
-    if occursin("No module named 'ESMF'", string(e))
-        error("""
-        XESMF.jl requires the ESMF library to be installed.
-        This is usually handled automatically by CondaPkg, but on some systems
-        (particularly Windows) it may need to be installed manually.
-        
-        Try running:
-        julia -e "using CondaPkg; CondaPkg.add([\"esmf\", \"esmpy\"])"
-        """)
-    else
-        rethrow(e)
+# Placeholder (will be overwritten in __init__)
+xesmf = Py(nothing)
+
+function __init__()
+    global xesmf
+    try
+        xesmf = pyimport("xesmf")
+    catch e
+        if occursin("No module named 'ESMF'", string(e))
+            error("""
+            XESMF.jl requires the ESMF library to be installed.
+            This is usually handled automatically by CondaPkg, but on some systems
+            (particularly Windows) it may need to be installed manually.
+
+            Try running:
+            julia -e "using CondaPkg; CondaPkg.add(["esmf", "esmpy"])"
+            """)
+        else
+            rethrow(e)
+        end
     end
 end
-
-sparse_regridder_weights(regridder) = sparse_regridder_weights(Float64, regridder)
 
 """
     sparse_regridder_weights(FT, regridder)
@@ -42,5 +45,6 @@ function sparse_regridder_weights(FT, regridder)
     return weights
 end
 
-end # module XESMF
+sparse_regridder_weights(regridder) = sparse_regridder_weights(Float64, regridder)
 
+end # module XESMF
