@@ -23,7 +23,7 @@ makedocs(
 
 # Deploy documentation to GitHub Pages
 deploydocs(
-    repo = "github.com/numericalearth/XESMF.jl.git",
+    repo = "github.com/NumericalEarth/XESMF.jl.git",
     devbranch = "main",
     push_preview = true,
 )
