@@ -23,7 +23,7 @@ Documentation is available at https://numericalearth.github.io/XESMF.jl/
 
 ## Contributing
 
-At the moment only a subset of the [xESMF](https://github.com/pangeo-data/xESMF) python package functionality is exposed.
+Only a subset of the [xESMF](https://github.com/pangeo-data/xESMF) python package functionality is exposed.
 Open an [issue](https://github.com/NumericalEarth/XESMF.jl/issues/new) or a [pull request](https://github.com/NumericalEarth/XESMF.jl/pulls) if you'd like to extend more of Python's xESMF functionality via this wrapper.
 
 ## License
