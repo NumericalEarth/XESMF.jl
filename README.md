@@ -28,7 +28,7 @@ Pkg.add("XESMF")
 
 ## Documentation
 
-Documentation is available at https://numericalearth.github.io/XESMF.jl/
+Documentation is available at https://numericalearth.github.io/XESMF.jl/stable
 
 ## License
 
