@@ -96,5 +96,22 @@ end
         weights = XESMF.sparse_regridder_weights(regridder)
 
         @test weights isa SparseMatrixCSC
+
+        # test that the regridder works with dense and strided arrays
+        dense_tg = zeros(prod(size(tg)))
+        dense_ll = zeros(prod(size(ll)))
+
+        strided_tg = vec(view(zeros(size(tg, 1)+5, size(tg, 2)+5), 1:size(tg, 1), 1:size(tg, 2)))
+        strided_ll = vec(view(zeros(size(ll, 1)+5, size(ll, 2)+5), 1:size(ll, 1), 1:size(ll, 2)))
+
+        rand_tg = rand(prod(size(tg)))
+        rand_ll = rand(prod(size(ll)))
+
+        dense_tg .= rand_tg
+        strided_tg .= rand_tg
+        regridder(dense_ll, dense_tg)
+        regridder(strided_ll, strided_tg)
+
+        @test all(dense_ll .== strided_ll)
     end
 end
