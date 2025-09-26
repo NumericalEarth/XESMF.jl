@@ -3,6 +3,7 @@ module XESMF
 using CondaPkg
 using PythonCall
 using SparseArrays
+using LinearAlgebra
 
 struct Regridder{S, M, V1, V2}
     method :: M
@@ -38,6 +39,16 @@ function sparse_regridder_weights(FT, regridder)
     weights = sparse(rows, cols, vals, shape[1], shape[2])
 
     return weights
+end
+
+# Generic regridding function that does not check the dimensions of the `src` and
+# `dst` arrays
+function regrid!(dst::AbstractVector, regridder::Regridder, src::AbstractVector)
+    regridder.src_temp .= src
+    LinearAlgebra.mul!(regridder.dst_temp, regridder.weights, regridder.src_temp)
+    dst .= regridder.dst_temp
+
+    return dst
 end
 
 sparse_regridder_weights(regridder) = sparse_regridder_weights(Float64, regridder)
