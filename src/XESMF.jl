@@ -11,7 +11,7 @@ struct Regridder{S, M, V1, V2}
     dst_temp :: V2
 end
 
-Base.summary(r::Regridder{S, M, V1, V2}) where {S, M, V1, V2} = "$(r.method) Regridder on $A"
+Base.summary(r::Regridder{S, M, V1, V2}) where {S, M, V1, V2} = "$(r.method) Regridder"
 
 function Base.show(io::IO, r::Regridder)
     print(io, summary(r), '\n')
@@ -42,6 +42,34 @@ end
 
 sparse_regridder_weights(regridder) = sparse_regridder_weights(Float64, regridder)
 
+"""
+    Regridder(src_coordinates::Dict{String, <:AbstractArray},
+              dst_coordinates::Dict{String, <:AbstractArray};
+              method="conservative", periodic=false)
+
+Return a Regridder from the xESMF Python package to regrid data from
+`src_coordinates` to `dst_coordinates` using the specified `method`.
+
+The `src_coordinates` and `dst_coordinates` are dictionaries that contain
+information about the two grids.
+
+xESMF exposes five different regridding algorithms from the ESMF library,
+specified with the `method` keyword argument:
+
+* `"bilinear"`: `ESMF.RegridMethod.BILINEAR`
+* `"conservative"`: `ESMF.RegridMethod.CONSERVE`
+* `"conservative_normed"`: `ESMF.RegridMethod.CONSERVE`
+* `"patch"`: `ESMF.RegridMethod.PATCH`
+* `"nearest_s2d"`: `ESMF.RegridMethod.NEAREST_STOD`
+* `"nearest_d2s"`: `ESMF.RegridMethod.NEAREST_DTOS`
+
+where `conservative_normed` is just the conservative method with the normalization set to
+`ESMF.NormType.FRACAREA` instead of the default `norm_type = ESMF.NormType.DSTAREA`.
+
+For more information, see the Python xESMF documentation at:
+
+> https://xesmf.readthedocs.io/en/latest/notebooks/Compare_algorithms.html
+"""
 function Regridder(src_coordinates::Dict{String, <:AbstractArray},
                    dst_coordinates::Dict{String, <:AbstractArray};
                    method="conservative", periodic=false)
@@ -49,7 +77,7 @@ function Regridder(src_coordinates::Dict{String, <:AbstractArray},
     xesmf = XESMF.xesmf
     regridder = xesmf.Regridder(src_coordinates, dst_coordinates, method; periodic)
     method = uppercasefirst(string(regridder.method))
-    @show typeof(regridder)
+
     weights = XESMF.sparse_regridder_weights(regridder)
 
     Ndst, Nsrc = size(weights)
