@@ -4,6 +4,62 @@ using CondaPkg
 using PythonCall
 using SparseArrays
 
+struct Regridder{S, M, V1, V2}
+    method :: M
+    weights :: S
+    src_temp :: V1
+    dst_temp :: V2
+end
+
+Base.summary(r::Regridder{S, M, V1, V2}) where {S, M, V1, V2} = "$(r.method) Regridder on $A"
+
+function Base.show(io::IO, r::Regridder)
+    print(io, summary(r), '\n')
+    print(io, "├── weights: ", summary(r.weights), '\n')
+    print(io, "├── src_temp: ", summary(r.src_temp), '\n')
+    print(io, "└── dst_temp: ", summary(r.dst_temp))
+end
+
+function extract_xesmf_coordinates_structure end
+
+"""
+    sparse_regridder_weights(FT, regridder)
+
+Return the regridder weights as a sparse matrix.
+"""
+function sparse_regridder_weights(FT, regridder)
+    coords = regridder.weights.data
+    shape  = pyconvert(Tuple{Int, Int}, coords.shape)
+    vals   = pyconvert(Array{FT}, coords.data)
+    coords = pyconvert(Array{FT}, coords.coords)
+    rows = coords[1, :] .+ 1
+    cols = coords[2, :] .+ 1
+
+    weights = sparse(rows, cols, vals, shape[1], shape[2])
+
+    return weights
+end
+
+sparse_regridder_weights(regridder) = sparse_regridder_weights(Float64, regridder)
+
+function Regridder(src_coordinates::Dict{String, <:AbstractArray},
+                   dst_coordinates::Dict{String, <:AbstractArray};
+                   method="conservative", periodic=false)
+
+    xesmf = XESMF.xesmf
+    regridder = xesmf.Regridder(src_coordinates, dst_coordinates, method; periodic)
+    method = uppercasefirst(string(regridder.method))
+    @show typeof(regridder)
+    weights = XESMF.sparse_regridder_weights(regridder)
+
+    Ndst, Nsrc = size(weights)
+
+    temp_src = zeros(Nsrc)
+    temp_dst = zeros(Ndst)
+
+    return Regridder(method, weights, temp_src, temp_dst)
+end
+
 # Placeholder (will be overwritten in __init__)
 xesmf = Py(nothing)
 
@@ -26,25 +82,5 @@ function __init__()
         end
     end
 end
-
-"""
-    sparse_regridder_weights(FT, regridder)
-
-Return the regridder weights as a sparse matrix.
-"""
-function sparse_regridder_weights(FT, regridder)
-    coords = regridder.weights.data
-    shape  = pyconvert(Tuple{Int, Int}, coords.shape)
-    vals   = pyconvert(Array{FT}, coords.data)
-    coords = pyconvert(Array{FT}, coords.coords)
-    rows = coords[1, :] .+ 1
-    cols = coords[2, :] .+ 1
-
-    weights = sparse(rows, cols, vals, shape[1], shape[2])
-
-    return weights
-end
-
-sparse_regridder_weights(regridder) = sparse_regridder_weights(Float64, regridder)
 
 end # module XESMF
