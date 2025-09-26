@@ -41,6 +41,9 @@ function sparse_regridder_weights(FT, regridder)
     return weights
 end
 
+# The easy case, for dense vectors, the regridding operation defaults to a matrix multiplication
+(regridder::Regridder)(dst::DenseVector, src::DenseVector) = LinearAlgebra.mul!(dst, regridder.weights, src)
+
 # Generic regridding function that does not check the dimensions of the `src` and
 # `dst` arrays. For general vectors that might be discontinuous in memory, we need
 # to broadcast the value to a `DenseArray` before performing the sparse matrix multiply
@@ -48,12 +51,20 @@ function (regridder::Regridder)(dst::AbstractVector, src::AbstractVector)
     regridder.src_temp .= src
     LinearAlgebra.mul!(regridder.dst_temp, regridder.weights, regridder.src_temp)
     dst .= regridder.dst_temp
-
     return dst
 end
 
-# The easy case, for dense vectors, the regridding operation defaults to a matrix multiplication
-(regridder::Regridder)(dst::DenseVector, src::DenseVector) = LinearAlgebra.mul!(dst, regridder.weights, src)
+# Mixed cases 
+function (regridder::Regridder)(dst::DenseVector, src::AbstractVector)
+    regridder.src_temp .= src
+    return LinearAlgebra.mul!(dst, regridder.weights, regridder.src_temp)
+end
+
+function (regridder::Regridder)(dst::AbstractVector, src::DenseVector)
+    LinearAlgebra.mul!(regridder.dst_temp, regridder.weights, src)
+    dst .= regridder.dst_temp
+    return dst
+end
 
 sparse_regridder_weights(regridder) = sparse_regridder_weights(Float64, regridder)
 
