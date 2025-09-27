@@ -12,7 +12,7 @@ struct Regridder{S, M, V1, V2}
     dst_temp :: V2
 end
 
-Base.summary(r::Regridder{S, M, V1, V2}) where {S, M, V1, V2} = "$(r.method) Regridder"
+Base.summary(r::Regridder{S, M, V1, V2}) where {S, M, V1, V2} = "$(uppercasefirst(r.method)) Regridder"
 
 function Base.show(io::IO, r::Regridder)
     print(io, summary(r), '\n')
@@ -54,7 +54,7 @@ function (regridder::Regridder)(dst::AbstractVector, src::AbstractVector)
     return dst
 end
 
-# Mixed cases 
+# Mixed cases
 function (regridder::Regridder)(dst::DenseVector, src::AbstractVector)
     regridder.src_temp .= src
     return LinearAlgebra.mul!(dst, regridder.weights, regridder.src_temp)
