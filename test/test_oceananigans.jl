@@ -1,24 +1,30 @@
 include("setup_runtests.jl")
+
+using Oceananigans
+using Oceananigans.Fields: AbstractField
 using SparseArrays
 
-x_node_array(x::AbstractVector, Nx, Ny) = view(x, 1:Nx) |> Array
-y_node_array(x::AbstractVector, Nx, Ny) = view(x, 1:Ny) |> Array
-x_node_array(x::AbstractMatrix, Nx, Ny) = view(x, 1:Nx, 1:Ny) |> Array
+function x_node_array(x::AbstractVector, Nx, Ny)
+    return Array(repeat(view(x, 1:Nx), 1, Ny))'
+end
+function  y_node_array(x::AbstractVector, Nx, Ny)
+    return Array(repeat(view(x, 1:Ny)', Nx, 1))'
+end
+x_node_array(x::AbstractMatrix, Nx, Ny) = Array(view(x, 1:Nx, 1:Ny))'
 
-x_vertex_array(x::AbstractVector, Nx, Ny) = view(x, 1:Nx+1) |> Array
-y_vertex_array(x::AbstractVector, Nx, Ny) = view(x, 1:Ny+1) |> Array
-x_vertex_array(x::AbstractMatrix, Nx, Ny) = view(x, 1:Nx+1, 1:Ny+1) |> Array
+function x_vertex_array(x::AbstractVector, Nx, Ny)
+    return Array(repeat(view(x, 1:Nx+1), 1, Ny+1))'
+end
+function y_vertex_array(x::AbstractVector, Nx, Ny)
+    return Array(repeat(view(x, 1:Ny+1)', Nx+1, 1))'
+end
+x_vertex_array(x::AbstractMatrix, Nx, Ny) = Array(view(x, 1:Nx+1, 1:Ny+1))'
 
 y_node_array(x::AbstractMatrix, Nx, Ny) = x_node_array(x, Nx, Ny)
 y_vertex_array(x::AbstractMatrix, Nx, Ny) = x_vertex_array(x, Nx, Ny)
 
-function regridding_weights(dst_field, src_field)
+function extract_xesmf_coordinates_structure(dst_field::AbstractField, src_field::AbstractField)
     ℓx, ℓy, ℓz = Oceananigans.Fields.instantiated_location(src_field)
-
-    # We only support regridding between centered fields.
-    @assert ℓx isa Center
-    @assert ℓy isa Center
-    @assert (ℓx, ℓy, ℓz) == Oceananigans.Fields.instantiated_location(dst_field)
 
     dst_grid = dst_field.grid
     src_grid = src_field.grid
@@ -35,7 +41,7 @@ function regridding_weights(dst_field, src_field)
     λvˢ = λnodes(src_grid, Face(), Face(), ℓz, with_halos=true)
     φvˢ = φnodes(src_grid, Face(), Face(), ℓz, with_halos=true)
 
-    # Build data structures expected by XESMF.
+    # Build data structures expected by xESMF
     Nˢx, Nˢy, Nˢz = size(src_field)
     Nᵈx, Nᵈy, Nᵈz = size(dst_field)
 
@@ -59,7 +65,7 @@ function regridding_weights(dst_field, src_field)
                            "lat_b" => φvˢ,
                            "lon_b" => λvˢ)
 
-    return src_coordinates, dst_coordinates
+    return dst_coordinates, src_coordinates
 end
 
 @testset "Oceananigans Integration Tests" begin
@@ -72,7 +78,7 @@ end
         cll = CenterField(ll)
 
         # Test that we can create the coordinate structures
-        src_coordinates, dst_coordinates = regridding_weights(ctg, cll)
+        dst_coordinates, src_coordinates = extract_xesmf_coordinates_structure(cll, ctg)
 
         # Verify coordinate structures are valid
         @test haskey(src_coordinates, "lat")
@@ -89,13 +95,11 @@ end
         @test size(tg) == (360, 170, 1)
         @test size(ll) == (360, 180, 1)
 
-        xesmf = XESMF.xesmf
-        periodic = Oceananigans.Grids.topology(ctg.grid, 1) === Periodic ? PythonCall.pybuiltins.True : pybuiltins.False
+        periodic = Oceananigans.Grids.topology(ctg.grid, 1) === Periodic ? true : false
         method = "conservative"
-        regridder = xesmf.Regridder(src_coordinates, dst_coordinates, method; periodic)
-        weights = XESMF.sparse_regridder_weights(regridder)
+        regridder = XESMF.Regridder(src_coordinates, dst_coordinates; method, periodic)
 
-        @test weights isa SparseMatrixCSC
+        @test regridder.weights isa SparseMatrixCSC
 
         # test that the regridder works with dense and strided arrays
         dense_tg = zeros(prod(size(tg)))
