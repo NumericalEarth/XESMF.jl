@@ -1,5 +1,7 @@
 module XESMF
 
+export Regridder
+
 using CondaPkg
 using PythonCall
 using SparseArrays
