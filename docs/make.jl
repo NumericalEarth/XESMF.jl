@@ -24,6 +24,8 @@ makedocs(
 # Deploy documentation to GitHub Pages
 deploydocs(
     repo = "github.com/NumericalEarth/XESMF.jl.git",
+    versions = ["stable" => "v^", "dev" => "dev", "v#.#.#"],
+    forcepush = true,
     devbranch = "main",
     push_preview = true,
 )
