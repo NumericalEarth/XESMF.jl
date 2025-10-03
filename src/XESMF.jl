@@ -23,7 +23,7 @@ function Base.show(io::IO, r::Regridder)
     print(io, "└── dst_temp: ", summary(r.dst_temp))
 end
 
-function extract_xesmf_coordinates_structure end
+function xesmf_coordinates end
 
 """
     sparse_regridder_weights(FT, regridder)
