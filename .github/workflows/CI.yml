@@ -50,6 +50,11 @@ jobs:
 
       - uses: julia-actions/julia-buildpkg@v1
 
+      # 🧠 Only on Windows — manually add ESMF/ESMPy
+      - name: Install ESMF/ESMPy for XESMF.jl
+        if: runner.os == 'Windows'
+        run: julia -e 'using CondaPkg; CondaPkg.add(["esmf", "esmpy"])'
+
       - uses: julia-actions/julia-runtest@v1
         with:
           coverage: true
