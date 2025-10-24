@@ -6,13 +6,13 @@ on:
       - main
     tags: "*"
     paths:
-      - ".github/workflows/Documention.yml"
+      - ".github/workflows/Documentation.yml"
       - "docs/**"
       - "src/**"
       - "Project.toml"
   pull_request:
     paths:
-      - ".github/workflows/Documention.yml"
+      - ".github/workflows/Documentation.yml"
       - "docs/**"
       - "src/**"
       - "Project.toml"
