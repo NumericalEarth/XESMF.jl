@@ -14,6 +14,10 @@ Julia wrapper for [xESMF](https://github.com/pangeo-data/xESMF), a python packag
   <img alt="CI" src="https://github.com/NumericalEarth/XESMF.jl/actions/workflows/CI.yml/badge.svg">
 </a>
 
+<a href="https://codecov.io/gh/NumericalEarth/XESMF.jl" >
+  <img src="https://codecov.io/gh/NumericalEarth/XESMF.jl/graph/badge.svg?token=ABAQ8KC347"/>
+</a>
+
 ## Overview
 
 XESMF.jl provides a Julia interface to the [xESMF](https://github.com/pangeo-data/xESMF) (xarray Earth System Model Exchange Format) Python library, which provides tools for interpolating and regridding fields between arbitrary grids.
