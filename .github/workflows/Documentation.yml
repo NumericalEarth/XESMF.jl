@@ -10,14 +10,12 @@ on:
       - "docs/**"
       - "src/**"
       - "Project.toml"
-      - "CHANGELOG.md"
   pull_request:
     paths:
       - ".github/workflows/Documention.yml"
       - "docs/**"
       - "src/**"
       - "Project.toml"
-      - "CHANGELOG.md"
   release:
 
 concurrency:
