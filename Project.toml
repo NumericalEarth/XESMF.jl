@@ -17,7 +17,7 @@ XESMFOceananigansExt = "Oceananigans"
 
 [compat]
 CondaPkg = "0.2.31"
-Oceananigans = "0.107, 0.108, 0.109"
+Oceananigans = "0.107, 0.108, 0.109, 0.110, 0.111, 0.112"
 PythonCall = "0.9.27"
 SparseArrays = "1"
 Test = "1"
